@@ -8,6 +8,12 @@ Worst-case Gap/Overlap 분석, 치수 영향도, Current-vs-Alternative 비교�
 
 [English README](README.md)
 
+## 왜 만들었나
+
+처음엔 조립 공차에 문제 있는지만 보려고 만든 Excel 시트였습니다. 결과물 수준을 좀 더 올리다 보니 Gap/Overlap → 설계안 비교 → 과거 사례 → AI 판단까지 붙었습니다. **결국 공차 한번 봐달라는 일에 조금 과하게 대응해서 Tolerance Calculator가 됐습니다.**
+
+이 공개 v0.1은 재사용 가능한 deterministic 계산 코어에 집중하며, 더 큰 버전에서 확장했던 AI 판단 계층은 아직 포함하지 않습니다.
+
 ## 목적
 
 공차 검토는 보통 스프레드시트에서 시작하지만 치수, 부호, 대안이 늘어나면 계산 근거를 추적하기 어려워집니다. Tolerance Calculator는 핵심 계산을 명시적이고 재현 가능하게 유지합니다.
