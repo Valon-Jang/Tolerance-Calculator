@@ -1,9 +1,9 @@
 import unittest
 
-from tolcalc import ChainTerm, Dimension, analyze_chain, compare_results
+from tolerance_calculator import ChainTerm, Dimension, analyze_chain, compare_results
 
 
-class TolCalcEngineTests(unittest.TestCase):
+class ToleranceCalculatorEngineTests(unittest.TestCase):
     def test_asymmetric_worst_case(self):
         dims = {
             "A": Dimension("A", 10.0, plus=0.3, minus=0.1),
