@@ -1,0 +1,13 @@
+{
+  "dimensions": [
+    {"id": "opening", "nominal": 100.0, "plus": 0.4, "minus": 0.6},
+    {"id": "part", "nominal": 99.8, "plus": 0.5, "minus": 0.3}
+  ],
+  "chain": [
+    {"dimension_id": "opening", "coefficient": 1},
+    {"dimension_id": "part", "coefficient": -1}
+  ],
+  "alternative_dimensions": [
+    {"id": "opening", "nominal": 101.0, "plus": 0.4, "minus": 0.6}
+  ]
+}
