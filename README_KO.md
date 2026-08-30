@@ -1,5 +1,9 @@
 # Tolerance Calculator
 
+<p align="center">
+  <img src="assets/tolerance-calculator-icon.png" alt="Tolerance Calculator icon" width="240">
+</p>
+
 Worst-case Gap/Overlap 분석, 치수 영향도, Current-vs-Alternative 비교를 위한 범용 엔지니어링 공차 계산기입니다.
 
 [English README](README.md)
