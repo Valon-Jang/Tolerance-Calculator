@@ -1,6 +1,6 @@
 # Roadmap
 
-TolCalc is intentionally split into a deterministic engineering core and optional higher-level workflow/AI layers.
+Tolerance Calculator is intentionally split into a deterministic engineering core and optional higher-level workflow/AI layers.
 
 ## Public v0.1 — deterministic core
 
