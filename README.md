@@ -10,6 +10,10 @@ A small, general-purpose engineering tolerance stack-up calculator for worst-cas
 
 ## Why
 
+Tolerance Calculator started as a simple Excel sheet to check whether an assembly had a tolerance problem. I kept pushing it further until it grew from Gap/Overlap analysis into design comparison, historical-case reference, and eventually AI-assisted engineering judgment. **In short: I was asked to check a tolerance, and I may have overreacted.**
+
+This public v0.1 focuses on the reusable deterministic calculation core; the broader AI judgment layer is not included here yet.
+
 Tolerance reviews often start in spreadsheets and quickly become difficult to audit when dimensions, signs, and alternatives change. Tolerance Calculator keeps the core calculation model explicit and reproducible:
 
 - nominal dimensions with asymmetric `+ / -` tolerance
