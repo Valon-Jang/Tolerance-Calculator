@@ -23,7 +23,14 @@ Worst-case Gap/Overlap 분석, 치수 영향도, Current-vs-Alternative 비교�
 Python 3.10+가 필요하며 런타임은 표준 라이브러리만 사용합니다.
 
 ```bash
-python -m tolcalc examples/basic.json
+python -m tolerance_calculator examples/basic_case.json --pretty
+```
+
+로컬 설치 후 CLI 명령으로도 실행할 수 있습니다.
+
+```bash
+python -m pip install -e .
+tolerance-calculator examples/basic_case.json --pretty
 ```
 
 결과의 부호는 clearance 기준입니다.
@@ -34,11 +41,19 @@ python -m tolcalc examples/basic.json
 
 ## Current vs Alternative
 
+JSON 입력에 `alternative_dimensions`를 넣으면 같은 체인에 대안 치수를 적용해 다시 계산하고 `comparison` 결과를 반환합니다. 포함된 예제에 대안 치수가 들어 있습니다.
+
 ```bash
-python -m tolcalc examples/current.json --alternative examples/alternative.json
+python -m tolerance_calculator examples/basic_case.json --pretty
 ```
 
 Nominal, Minimum, Maximum, Span, 판정 변화와 Gap/Overlap 위험 제거 여부를 비교합니다.
+
+## Python API
+
+```python
+from tolerance_calculator import Dimension, ChainTerm, analyze_chain
+```
 
 ## 영향도
 
