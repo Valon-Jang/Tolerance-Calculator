@@ -1,7 +1,7 @@
 # Tolerance Calculator
 
 <p align="center">
-  <img src="assets/tolerance-calculator-icon.png" alt="Tolerance Calculator icon" width="240">
+  <img src="assets/TolCalc_Transparent.png" alt="Tolerance Calculator icon" width="240">
 </p>
 
 A small, general-purpose engineering tolerance stack-up calculator for worst-case gap/overlap analysis, sensitivity ranking, and Current-vs-Alternative comparison.
