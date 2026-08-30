@@ -140,14 +140,15 @@ def analyze_chain(
 def compare_results(current: ChainResult, alternative: ChainResult) -> dict:
     """Return a compact Current-vs-Alt comparison."""
 
+    clean = lambda value: round(value, 12)
     return {
         "current": current.to_dict(),
         "alternative": alternative.to_dict(),
         "delta": {
-            "nominal": alternative.nominal - current.nominal,
-            "minimum": alternative.minimum - current.minimum,
-            "maximum": alternative.maximum - current.maximum,
-            "span": alternative.span - current.span,
+            "nominal": clean(alternative.nominal - current.nominal),
+            "minimum": clean(alternative.minimum - current.minimum),
+            "maximum": clean(alternative.maximum - current.maximum),
+            "span": clean(alternative.span - current.span),
         },
         "overlap_risk_removed": current.minimum < 0 <= alternative.minimum,
         "gap_risk_removed": current.maximum > 0 >= alternative.maximum,
