@@ -1,52 +1,85 @@
-# TolCalc
+# Tolerance Calculator
 
-**Worst Case Gap/Overlap, 영향도, Current/Alt 비교를 위한 범용 조립공차 분석 도구**
+Worst-case Gap/Overlap 분석, 치수 영향도, Current-vs-Alternative 비교를 위한 범용 엔지니어링 공차 계산기입니다.
 
-TolCalc는 단순히 공차 숫자 하나를 계산하는 도구가 아니라, 공차 검토를 반복 가능한 엔지니어링 업무 흐름으로 만들기 위한 실험 프로젝트입니다.
+[English README](README.md)
 
-공개 `v0.1`은 회사/고객/제품별 정보 없이 범용 계산 코어만 분리한 버전입니다. 모든 예제 데이터는 합성 데이터입니다.
+## 목적
 
-## 현재 기능
+공차 검토는 보통 스프레드시트에서 시작하지만 치수, 부호, 대안이 늘어나면 계산 근거를 추적하기 어려워집니다. Tolerance Calculator는 핵심 계산을 명시적이고 재현 가능하게 유지합니다.
 
-- 비대칭 `+/-` 공차 입력
-- 양수/음수 계수를 사용하는 공차 Chain
-- Worst Case `Min / Nominal / Max`
-- Gap / Overlap(간섭) 가능성 판정
-- Worst Case 폭 기준 치수별 영향도 순위
-- Current / Alternative 설계안 비교
-- JSON 입출력
-- Python 표준 라이브러리 기반 계산 코어
-- Unit Test 및 GitHub Actions CI
+- 비대칭 `+ / -` 공차
+- 부호를 가진 공차 체인 계수
+- Worst-case 최소 / 최대
+- Gap / Overlap 판정
+- 치수별 영향도
+- Current vs Alternative 비교
+- 자동화와 AI 연동을 위한 JSON 입출력
 
-## 실행
+공개 버전에는 회사, 고객, 제품, 생산 데이터가 포함되어 있지 않습니다.
 
-Python 3.10 이상이 필요합니다.
+## 빠른 실행
 
-```bash
-python -m pip install -e .
-tolcalc examples/basic_case.json --pretty
-```
-
-설치 없이도 실행할 수 있습니다.
+Python 3.10+가 필요하며 런타임은 표준 라이브러리만 사용합니다.
 
 ```bash
-python -m tolcalc.cli examples/basic_case.json --pretty
+python -m tolcalc examples/basic.json
 ```
 
-Signed clearance 결과에서 양수는 **Gap**, 음수는 **Overlap / Interference**를 의미합니다.
+결과의 부호는 clearance 기준입니다.
+
+- 전체 구간이 양수: `GAP_ONLY`
+- 전체 구간이 음수: `OVERLAP_ONLY`
+- 0을 가로지름: `GAP_OR_OVERLAP`
+
+## Current vs Alternative
+
+```bash
+python -m tolcalc examples/current.json --alternative examples/alternative.json
+```
+
+Nominal, Minimum, Maximum, Span, 판정 변화와 Gap/Overlap 위험 제거 여부를 비교합니다.
+
+## 영향도
+
+Worst-case 기준 각 치수의 기여도는 다음으로 계산합니다.
+
+`abs(coefficient) × total tolerance span`
+
+이 값을 전체 공차 span 대비 비율로 정규화해 어떤 치수가 Worst-case 범위를 가장 크게 지배하는지 보여줍니다. 통계적 공정능력 모델은 아닙니다.
+
+## v0.1 범위
+
+현재 포함:
+
+- 비대칭 공차
+- 양/음 체인 계수
+- Worst-case stack-up
+- Gap/Overlap 판정
+- 치수 영향도 순위
+- Current/Alternative 비교
+- JSON CLI
+
+아직 포함하지 않음:
+
+- RSS / 통계 공차
+- Monte Carlo
+- GD&T 관계
+- 단위 변환
+- Excel Import/Export
+- Revision DB
+- 그래픽 Stack Editor
+- AI 추천 계층
+
+위 항목은 향후 확장 후보이며 현재 구현됐다는 의미가 아닙니다.
 
 ## 설계 원칙
 
-**Calculation first, AI second.**
+- **계산 투명성** — 모든 결과는 명시된 치수와 계수에서 계산됩니다.
+- **Deterministic first** — 핵심 공차 계산은 LLM에 의존하지 않습니다.
+- **AI-friendly** — JSON 인터페이스로 AI/자동화 시스템에서 쉽게 호출할 수 있습니다.
+- **범용 공개 데이터** — 예제는 모두 합성 데이터입니다.
 
-공차 계산은 결정적이고 독립적으로 검증 가능해야 합니다. 향후 유사 과거사례 검색, 검토 Point 제안, 설계대안 추천 같은 AI 기능을 추가하더라도 검증된 계산 코어 위에서 동작하도록 분리합니다.
+## 배경
 
-향후 계획은 [ROADMAP.md](docs/ROADMAP.md)를 참고하세요.
-
-## 공개 범위
-
-이 저장소에는 회사 고유 치수, 제품명, 고객 정보, 내부 기준표, 사내 DB, 실제 프로젝트 데이터가 포함되지 않습니다.
-
-## Author
-
-**Valon Jang** — Packaging & Product Development Engineer, South Korea 🇰🇷
+이 공개 구현은 엔지니어링 공차 검토를 더 반복 가능하고 비교 가능하며 감사 가능한 형태로 만들기 위한 소프트웨어/AI 실험에서 출발했습니다. 공개 저장소는 회사별 Workflow나 실제 데이터가 아니라 재사용 가능한 계산 코어에 집중합니다.
