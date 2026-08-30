@@ -23,7 +23,14 @@ This public version is intentionally generic and contains no company, customer, 
 Requires Python 3.10+ and uses only the standard library at runtime.
 
 ```bash
-python -m tolcalc examples/basic.json
+python -m tolerance_calculator examples/basic_case.json --pretty
+```
+
+Or install the package locally and use the CLI command:
+
+```bash
+python -m pip install -e .
+tolerance-calculator examples/basic_case.json --pretty
 ```
 
 Example input:
@@ -49,8 +56,12 @@ The signed result is interpreted as clearance:
 
 ## Current vs Alternative
 
+A JSON case can include `alternative_dimensions`. Tolerance Calculator reruns the same chain with those dimensions replaced and returns a `comparison` object.
+
+The included example already contains an alternative:
+
 ```bash
-python -m tolcalc examples/current.json --alternative examples/alternative.json
+python -m tolerance_calculator examples/basic_case.json --pretty
 ```
 
 The comparison reports changes in nominal, minimum, maximum, span, classification, and whether an overlap/gap risk was removed.
@@ -58,7 +69,7 @@ The comparison reports changes in nominal, minimum, maximum, span, classificatio
 ## Python API
 
 ```python
-from tolcalc import Dimension, ChainTerm, analyze_chain
+from tolerance_calculator import Dimension, ChainTerm, analyze_chain
 
 dimensions = {
     "A": Dimension("A", nominal=10.0, plus=0.2, minus=0.1),
@@ -84,11 +95,11 @@ and normalized as a percentage of the total stack span. This is not a statistica
 ## Repository structure
 
 ```text
-tolcalc/          calculation engine and CLI
-tests/            regression tests
-examples/         synthetic input examples
-docs/             design notes
-.github/workflows automated tests
+tolerance_calculator/  calculation engine and CLI
+tests/                 regression tests
+examples/              synthetic input examples
+docs/                  design notes
+.github/workflows      automated tests
 ```
 
 ## Test
