@@ -1,117 +1,136 @@
-# TolCalc
+# Tolerance Calculator
 
-**Engineering tolerance stack-up analysis for worst-case gap/overlap, sensitivity, and design comparison.**
+A small, general-purpose engineering tolerance stack-up calculator for worst-case gap/overlap analysis, sensitivity ranking, and Current-vs-Alternative comparison.
 
 [한국어 README](README_KO.md)
 
-TolCalc is an experiment in turning tolerance analysis from a one-off calculation into a repeatable engineering review workflow.
-
-The public `v0.1` release starts with the deterministic core: define dimensions and asymmetric tolerances, compose a signed chain, calculate worst-case bounds, identify the dimensions driving the stack, and compare a current design against an alternative.
-
-> This public version contains only generalized logic and synthetic examples. No company-specific dimensions, products, customer data, internal reference tables, or proprietary workflow data are included.
-
 ## Why
 
-A tolerance stack result is useful, but the engineering question is usually larger:
+Tolerance reviews often start in spreadsheets and quickly become difficult to audit when dimensions, signs, and alternatives change. Tolerance Calculator keeps the core calculation model explicit and reproducible:
 
-1. Can interference occur?
-2. Which dimension contributes most to the risk?
-3. What changes if a nominal dimension or tolerance is adjusted?
-4. Did the alternative actually remove the problem?
-5. Can the reasoning be reproduced later?
+- nominal dimensions with asymmetric `+ / -` tolerance
+- signed chain coefficients
+- worst-case minimum / maximum
+- gap / overlap classification
+- sensitivity contribution by dimension
+- Current vs Alternative comparison
+- JSON input/output for scripting or AI workflows
 
-TolCalc is designed around that review loop rather than around a single calculator screen.
-
-## Current features
-
-- Asymmetric `+/-` tolerances
-- Signed tolerance chains with arbitrary non-zero coefficients
-- Worst-case `minimum / nominal / maximum`
-- Gap / overlap-interference classification
-- Sensitivity ranking by worst-case span contribution
-- Current vs. alternative design comparison
-- JSON input/output for automation
-- Python standard-library calculation core
-- Unit tests and CI
+This public version is intentionally generic and contains no company, customer, product, or production data.
 
 ## Quick start
 
-Requires Python 3.10+.
+Requires Python 3.10+ and uses only the standard library at runtime.
 
 ```bash
-python -m pip install -e .
-tolcalc examples/basic_case.json --pretty
+python -m tolcalc examples/basic.json
 ```
 
-Or without installation:
-
-```bash
-python -m tolcalc.cli examples/basic_case.json --pretty
-```
-
-## Example input
+Example input:
 
 ```json
 {
   "dimensions": [
-    {"id": "opening", "nominal": 100.0, "plus": 0.4, "minus": 0.6},
-    {"id": "part", "nominal": 99.8, "plus": 0.5, "minus": 0.3}
+    {"id": "housing", "nominal": 20.0, "plus": 0.2, "minus": 0.1},
+    {"id": "insert", "nominal": 19.6, "plus": 0.1, "minus": 0.1}
   ],
   "chain": [
-    {"dimension_id": "opening", "coefficient": 1},
-    {"dimension_id": "part", "coefficient": -1}
-  ],
-  "alternative_dimensions": [
-    {"id": "opening", "nominal": 101.0, "plus": 0.4, "minus": 0.6}
+    {"dimension_id": "housing", "coefficient": 1},
+    {"dimension_id": "insert", "coefficient": -1}
   ]
 }
 ```
 
-For a signed clearance chain, positive output means **gap** and negative output means **overlap/interference**.
+The signed result is interpreted as clearance:
 
-## Core calculation
+- positive interval: `GAP_ONLY`
+- negative interval: `OVERLAP_ONLY`
+- crosses zero: `GAP_OR_OVERLAP`
 
-For each dimension:
+## Current vs Alternative
 
-```text
-low  = nominal - minus_tolerance
-high = nominal + plus_tolerance
+```bash
+python -m tolcalc examples/current.json --alternative examples/alternative.json
 ```
 
-Each chain term applies its coefficient to that interval. TolCalc selects the lower and upper contribution correctly even when the coefficient is negative, then sums all contributions into the worst-case interval.
+The comparison reports changes in nominal, minimum, maximum, span, classification, and whether an overlap/gap risk was removed.
 
-Sensitivity is based on each dimension's contribution to total worst-case span:
+## Python API
 
-```text
-abs(coefficient) × (plus_tolerance + minus_tolerance)
+```python
+from tolcalc import Dimension, ChainTerm, analyze_chain
+
+dimensions = {
+    "A": Dimension("A", nominal=10.0, plus=0.2, minus=0.1),
+    "B": Dimension("B", nominal=9.7, plus=0.1, minus=0.1),
+}
+
+result = analyze_chain(
+    dimensions,
+    [ChainTerm("A", 1), ChainTerm("B", -1)],
+)
+
+print(result.to_dict())
 ```
 
-This deliberately keeps the core deterministic and auditable.
+## Sensitivity
 
-## Design philosophy
+For a pure worst-case stack, each dimension's contribution is calculated from:
 
-**Calculation first, AI second.**
+`abs(coefficient) × total tolerance span`
 
-The tolerance engine should remain deterministic and independently testable. Higher-level features such as historical case retrieval, design suggestions, or AI-generated review notes should sit on top of verified calculation results rather than replace them.
+and normalized as a percentage of the total stack span. This is not a statistical process capability model; it is a simple way to show which tolerances dominate the worst-case window.
 
-See [ROADMAP.md](docs/ROADMAP.md) for the planned review-workflow and optional AI layers.
+## Repository structure
 
-## Tests
+```text
+tolcalc/          calculation engine and CLI
+tests/            regression tests
+examples/         synthetic input examples
+docs/             design notes
+.github/workflows automated tests
+```
+
+## Test
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-The initial public release includes tests for asymmetric tolerances, negative chain terms, mixed gap/overlap ranges, sensitivity ranking, alternative-design comparison, and invalid references.
+CI runs the same tests across supported Python versions.
 
-## Status
+## Scope
 
-`v0.1.0` — generalized public core.
+### Included in v0.1
 
-The broader concept includes scenario coverage checks, revision/decision history, measured-value comparison, reusable case knowledge, and optional AI-assisted design review. Those are intentionally separated from the first public core so each layer can be tested independently.
+- asymmetric tolerances
+- positive and negative chain coefficients
+- worst-case stack analysis
+- gap/overlap classification
+- dimension sensitivity ranking
+- Current/Alternative comparison
+- JSON CLI
 
-## Author
+### Not yet included
 
-**Valon Jang** — Packaging & Product Development Engineer based in South Korea 🇰🇷
+- RSS / statistical tolerance analysis
+- Monte Carlo simulation
+- GD&T feature relationships
+- unit conversion
+- Excel import/export
+- revision database
+- graphical stack editor
+- AI recommendation layer
 
-I build and test new ways for AI and software to work on real engineering problems.
+These are possible extensions, not claims about the current implementation.
+
+## Design principles
+
+- **Transparent math** — every result comes from explicit dimensions and coefficients.
+- **Deterministic first** — calculation does not depend on an LLM.
+- **AI-friendly interface** — JSON makes the engine easy to call from AI or automation systems.
+- **Generic public data** — examples are synthetic and reusable outside any specific company or product.
+
+## Background
+
+This public implementation grew out of experiments in using software and AI to make engineering tolerance reviews easier to repeat, compare, and audit. The public repository focuses on the reusable calculation core rather than any company-specific workflow or data.
